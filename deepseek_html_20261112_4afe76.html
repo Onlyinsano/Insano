@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda Memoria - Gestión Policlínico CEE (2022-2026)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 30px 40px;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 4px solid #0a3d62;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 2.2em; color: #0a3d62; letter-spacing: 1px; }
+        .header .subtitle { font-size: 1.1em; color: #3c6382; margin-top: 8px; }
+        .header .periodo {
+            display: inline-block;
+            background: #0a3d62;
+            color: #fff;
+            padding: 6px 24px;
+            border-radius: 30px;
+            margin-top: 12px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #d1d8e0;
+            padding-bottom: 0;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #5a6a7a;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { background: #e8edf2; color: #0a3d62; }
+        .tab-btn.active { background: #0a3d62; color: #fff; }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0; right: 0;
+            height: 3px; background: #f39c12;
+        }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: #f8fafc;
+            border-left: 5px solid #0a3d62;
+            border-radius: 8px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .card h3 {
+            color: #0a3d62;
+            font-size: 1.15em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card h3 .icon { font-size: 1.2em; }
+        .card p, .card li { color: #2c3e50; font-size: 0.95em; }
+        .card ul { padding-left: 22px; margin-top: 8px; }
+        .card ul li { margin-bottom: 5px; }
+        .card-accent { border-left-color: #f39c12; }
+        .card-accent h3 { color: #b9770e; }
+        .card-success { border-left-color: #27ae60; }
+        .card-success h3 { color: #1e8449; }
+        .card-info { border-left-color: #2980b9; }
+        .card-info h3 { color: #1a5276; }
+
+        /* Tablas */
+        .table-wrap { overflow-x: auto; margin: 15px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88em;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        th {
+            background: #0a3d62;
+            color: #fff;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.82em;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            position: sticky;
+            top: 0;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e8edf2;
+            vertical-align: top;
+        }
+        tr:hover td { background: #f1f6fa; }
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .badge-pdf { background: #fdebd0; color: #b9770e; }
+        .badge-word { background: #d4e6f1; color: #1a5276; }
+        .badge-excel { background: #d5f5e3; color: #1e8449; }
+        .badge-img { background: #e8daef; color: #6c3483; }
+        .badge-other { background: #e5e8e8; color: #5d6d7e; }
+
+        a.doc-link {
+            color: #1a5276;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dashed #1a5276;
+            transition: all 0.2s;
+        }
+        a.doc-link:hover { color: #f39c12; border-bottom-color: #f39c12; }
+        .nota {
+            background: #fef9e7;
+            border: 1px solid #f9e79f;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            color: #7d6608;
+        }
+        .nota strong { color: #b9770e; }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background: #0a3d62;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 48px; height: 48px;
+            font-size: 1.4em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            display: none;
+            z-index: 999;
+        }
+        .back-to-top:hover { background: #f39c12; transform: translateY(-3px); }
+        .back-to-top.visible { display: block; }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .header h1 { font-size: 1.5em; }
+            .tab-btn { font-size: 0.75em; padding: 8px 12px; }
+            .card { padding: 15px; }
+            td, th { font-size: 0.75em; padding: 6px 8px; }
+        }
+        .glosario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .glosario-item {
+            background: #fff;
+            border: 1px solid #d1d8e0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 0.9em;
+        }
+        .glosario-item strong { color: #0a3d62; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>📋 Ayuda Memoria de Gestión</h1>
+        <div class="subtitle">Policlínico del Cuerpo de Ingenieros del Ejército (CEE)</div>
+        <div class="periodo">Período: 2022 – 2026</div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="inicio">🏠 Inicio</button>
+        <button class="tab-btn" data-tab="contabilidad">📊 Contabilidad</button>
+        <button class="tab-btn" data-tab="papp">📋 PAPP</button>
+        <button class="tab-btn" data-tab="pac">📑 PAC</button>
+        <button class="tab-btn" data-tab="memos">📬 Memos y Oficios</button>
+        <button class="tab-btn" data-tab="auditoria">🔍 Auditoría Interna</button>
+        <button class="tab-btn" data-tab="contraloria">⚖️ Contraloría</button>
+        <button class="tab-btn" data-tab="cobros">💼 Cobros y Facturación</button>
+        <button class="tab-btn" data-tab="planillaje">🧾 Planillaje</button>
+        <button class="tab-btn" data-tab="rrhh">👥 RRHH y Personal</button>
+        <button class="tab-btn" data-tab="legal">📁 Legal y Respaldo</button>
+        <button class="tab-btn" data-tab="sistemas">🖥️ Sistemas</button>
+        <button class="tab-btn" data-tab="cbop">📦 Info CBOP Salán</button>
+        <button class="tab-btn" data-tab="descargas">📥 Descargas Equipo</button>
+        <button class="tab-btn" data-tab="anexos">📌 Anexos</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- INICIO -->
+    <!-- ============================================================ -->
+    <div class="tab-content active" id="tab-inicio">
+        <div class="card card-success">
+            <h3><span class="icon">🎯</span> Propósito de esta Ayuda Memoria</h3>
+            <p>Este documento constituye el respaldo documental y la justificación de la gestión realizada en el <strong>Policlínico del Cuerpo de Ingenieros del Ejército (CEE)</strong> durante el período <strong>2022 – 2026</strong>. Recopila, organiza y explica las actividades, documentos generados, asientos contables, trámites y comunicaciones producidas en el ejercicio de mis funciones como <strong>Asistente Contable / Analista</strong>.</p>
+            <p>Su objetivo es servir como herramienta de consulta y evidencia ante requerimientos de auditoría, Contraloría, o cualquier instancia que solicite explicación sobre los documentos y registros generados en este período.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">👤</span> Funciones y Responsabilidades Principales</h3>
+            <ul>
+                <li><strong>Contabilidad general:</strong> Registro de asientos contables, elaboración de balances mensuales y anuales, conciliaciones bancarias y de cuentas por cobrar.</li>
+                <li><strong>Planillaje:</strong> Procesamiento de planillas de médicos, odontólogos, laboratorio y fisioterapia; liquidaciones económicas y facturación.</li>
+                <li><strong>Presupuesto:</strong> Elaboración del PAPP, PAC, reformas y reprogramaciones presupuestarias.</li>
+                <li><strong>Cobros y facturación:</strong> Gestión de cuentas por cobrar a ISSFA, IESS, MSP e ISSPOL; conciliaciones y trámites de cobro.</li>
+                <li><strong>Auditoría y Contraloría:</strong> Preparación de descargos, anexos, seguimiento de auditorías internas y externas.</li>
+                <li><strong>Oficios y memorandos:</strong> Comunicaciones internas y externas, oficios de planillaje, cobro y reexpedición.</li>
+                <li><strong>Recursos Humanos:</strong> Contratos, actas de entrega-recepción, certificados laborales, declaraciones.</li>
+                <li><strong>Sistemas:</strong> Manejo del sistema financiero SIFCEE, EPSCAN, VPN, libros mayores.</li>
+            </ul>
+        </div>
+
+        <div class="card card-accent">
+            <h3><span class="icon">📅</span> Línea de Tiempo de la Gestión</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Año</th><th>Hitos Principales</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>2022</strong></td><td>Inicio de gestión. Planillaje mensual, balances, primeros oficios de cobro IESS, trámite 186069.</td></tr>
+                        <tr><td><strong>2023</strong></td><td>Presupuesto 2023, PAC 2023, auditoría interna, conciliación ISSFA 2021-2022, cierre año 2023.</td></tr>
+                        <tr><td><strong>2024</strong></td><td>Auditoría Contraloría 2024, descargos de responsabilidad, PAPP 2024, PAC 2024, reformas y reprogramaciones.</td></tr>
+                        <tr><td><strong>2025</strong></td><td>PAPP 2025, PAC 2025, reformas mensuales, balances mensuales, oficios de cobro, informes de ejecución presupuestaria.</td></tr>
+                        <tr><td><strong>2026</strong></td><td>PAPP 2026, PAC 2026, reformas enero/febrero, balances mensuales, informes de reexpedición, cierre de gestión.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="nota">
+            <strong>📌 Nota sobre el inventario:</strong> Esta ayuda memoria se basa en el inventario documental <code>INVENTARIO_DOCUMENTOS_POLICLINICO.xlsx</code>, que contiene más de 1000 archivos organizados en Google Drive. Aquí se presentan los documentos clave y se agrupan por categorías. Para acceder al inventario completo, consulte el archivo Excel original o la carpeta de Drive <code>POLICLINICO</code>.
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- CONTABILIDAD -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-contabilidad">
+        <div class="card">
+            <h3><span class="icon">📊</span> Contabilidad y Balances</h3>
+            <p>Esta sección agrupa los balances mensuales y anuales, cierres contables, asientos, conciliaciones y liquidaciones económicas generadas durante la gestión.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📅</span> Balances Mensuales y Anuales (2022 – 2026)</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Año</th><th>Mes / Período</th><th>Documento</th><th>Tipo</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>2022</td><td>Enero</td><td>Balance Enero 2022</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1Pgt-sVPdzt6F90OZlMslGFsB9i2tjepN/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Febrero</td><td>Balance Febrero 2022</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/19Y4f0enN4lqNZ41LqssJhN6GVPtaJtwi/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Marzo</td><td>Balance Marzo 2022</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1Xzu5FJ2leYUNUhV3Lm_QDcczOxzCjNXi/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Abril</td><td>Balance Abril 2022</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1x2Zp4kJd1vlJoTziYI2kUFQ9bP5OHcvb/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>Enero</td><td>Balance 31 Enero 2023</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1Pgt-sVPdzt6F90OZlMslGFsB9i2tjepN/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>Febrero</td><td>Balance 28 Febrero 2023</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/19Y4f0enN4lqNZ41LqssJhN6GVPtaJtwi/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>Marzo</td><td>Balance 31 Marzo 2023</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1Xzu5FJ2leYUNUhV3Lm_QDcczOxzCjNXi/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>Abril</td><td>Balance 30 Abril 2023</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1x2Zp4kJd1vlJoTziYI2kUFQ9bP5OHcvb/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>Diciembre</td><td>Cierre Año 2023</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1vZDitmYUCkQeGEEaicmz4A9HmcatSssJ/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>Enero</td><td>Consolidado Enero 2024</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1piZGZXN4mIKyT5pATML5vltjPqftkGqQ/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>Febrero</td><td>Balance Febrero 2024</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1zutWVYp6tLi37rH3UtIo-nnZz2XxOdHv/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>Junio</td><td>Balance Junio 2024</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/12caLRXCI71k83kAyb-VeDyCF5d46eqey/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>Diciembre</td><td>Balance Diciembre 2024</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1zxLHSjSexyGPlf1_MebnX7YdMNcNDyVj/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2025</td><td>Diciembre</td><td>Balance Diciembre 2025</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/10uqvY1R_xwU2Qnch42Kjnxoh3muH64C5/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>Enero</td><td>Balance Enero 2026</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1YxwUH-72PtDcLXhc_YzXPemate9phwuI/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>Febrero</td><td>Balance Febrero 2026</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1-BSTj1yvdcsCzsQbSLM-tHr92n4x5749/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>Marzo</td><td>Balance Marzo 2026</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1FfraIpmUBtCjVUf9Mrhws96vQPe5ZXUf/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>Abril</td><td>Balance Abril 2026</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1YVksQmx2O4EWdEgFH5_y4r5EIIk-Uwmx/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022-2026</td><td>Todos</td><td>Todos los Balances Firmados 2022-2026</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1G4P0RHQ3U06adjEeXVyQ30RGfZlQ-Vku/view" target="_blank">Ver</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="nota"><strong>📌</strong> Los balances mensuales se encuentran organizados por año en la carpeta <code>EQUIPO / INFORMACION ENTREGADA CBOP SALAN / BALANCES</code>. Cada balance incluye firmas de responsabilidad.</div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📝</span> Asientos Contables (EPSCAN) – Muestra Representativa</h3>
+            <p>Los asientos contables se encuentran digitalizados en la carpeta <code>EPSCAN</code>, organizados por año (2022, 2023, 2024, 2025, 2026). Incluyen:</p>
+            <ul>
+                <li>Asientos de ingresos y egresos.</li>
+                <li>Asientos de transferencias bancarias.</li>
+                <li>Asientos de planillas y liquidaciones.</li>
+                <li>Asientos de reexpedición de cuentas ISSFA.</li>
+                <li>Asientos de cierre mensual y anual.</li>
+            </ul>
+            <p><strong>Justificación:</strong> Cada asiento responde a una transacción documentada (factura, planilla, transferencia, oficio) y se registra en el sistema SIFCEE. Los comprobantes físicos/digitales se archivan en EPSCAN como respaldo.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Asiento</th><th>Año</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>Asientos 76, 75, 74, 73</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1H9rJ7Ab3MaxfWW9N4CvhQmC_itPK3Zq4/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asientos 79, 78 y 77</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1gmMwGZRA5InCkvUQl6Dah5tSHPyK9a4H/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 04-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1aN-lKEBMpY9PiJmSQna2W9DhPZMKY7s8/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 03-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1IuV3IzogKLgmqEgWuyzelKM_gIO6MOCK/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 02-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/179m9dh0DkhSrfTfsYZX2sw6b-lLzmkj-/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 01-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1nunw8iZlqn7lrstQ1AA5ktj0kkXl5yPM/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 09-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1uRqz4tpKeGGOUItXCO4JK9UwDOw9Y101/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 10-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1sOncKoEHoe2N7UiPFL9ghtRMgUR56cNq/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 11-5</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1moG86OY0G0AwfUbMWP0lLiLWAQuFw4JK/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 12-6</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/15nJUXo6DQjN9MUWQYbedpyMVg2ED067V/view" target="_blank">Ver</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Carpeta completa:</strong> <code>POLICLINICO / EQUIPO / EPSCAN / [año]</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🤝</span> Conciliaciones ISSFA</h3>
+            <p>Se realizaron conciliaciones de valores entre el CEE y la ISSFA para los años 2021, 2022, 2023, 2024 y 2025. Estas conciliaciones permitieron identificar diferencias, valores no reconocidos y saldos pendientes.</p>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1417xmy587dOdgddjXVflWdo1BiSym1iK/view" target="_blank">Conciliación de Valores 2022 ISSFA (firmada)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1N_7H8Qa7riFEnRJfQd4D6HdqdliJaKmN/view" target="_blank">Conciliación de Valores 2022 ISSFA</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1EXP0yGomc7-fL-AI5i2PnHvCNAyxNDfw/edit" target="_blank">Conciliación de Valores 2022 ISSFA (Excel)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1DZX76RRKlMsdIoYulUTx-3RUMWCEc3df/view" target="_blank">Cuerpo de Ingenieros del Ejército 2024 (conciliación)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1iNag0E__IfIb8Kab5y5Bc_gwz5cWfcXW/view" target="_blank">Cuerpo de Ingenieros del Ejército 2024 (copia)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1UdO_bv3xQ2Eu2geMOdLJjFV-slcByqe4/view" target="_blank">Cuerpo de Ingenieros del Ejército 2025 (conciliación)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/10_037uPPyoioh2Y3tkp7-tfPwkZYfInt/view" target="_blank">Cuerpo de Ingenieros del Ejército 2025 (firmado)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">💰</span> Liquidaciones Económicas</h3>
+            <p>Se elaboraron liquidaciones económicas mensuales desde 2022 hasta 2026, que incluyen el cálculo de compensaciones, descuentos y valores netos a pagar al personal.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Año</th><th>Mes</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>2022</td><td>Mayo</td><td><a class="doc-link" href="https://drive.google.com/file/d/1RmJ7HFRKaXe52v9N_hPLjLgjEEsK0F0b/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Junio</td><td><a class="doc-link" href="https://drive.google.com/file/d/1dHCAkxbvvJC3cH_ivQQoC1WbTfqcbS_K/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Julio</td><td><a class="doc-link" href="https://drive.google.com/file/d/1TtM__LS9h61Y7mQgtybSxD3kQYnMWoBS/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Agosto</td><td><a class="doc-link" href="https://drive.google.com/file/d/1HcRZQnDcETltZ_1fQGClYZNfnO-d9l0O/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Septiembre</td><td><a class="doc-link" href="https://drive.google.com/file/d/1TQA0miDd99-2uYeyl24GqgMIrSQvjbYA/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Octubre</td><td><a class="doc-link" href="https://drive.google.com/file/d/1cvzfaEoA5viRC_XeIuhhUZv8Acn_FWc5/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Noviembre</td><td><a class="doc-link" href="https://drive.google.com/file/d/1wcmWaeBFqITSDC1HSFmQERqCK-n6Vhjy/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2022</td><td>Diciembre</td><td><a class="doc-link" href="https://drive.google.com/file/d/1xPBccHjM2v8hKIW4InQXC3rOX2ofbDV9/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>Enero</td><td><a class="doc-link" href="https://drive.google.com/file/d/1wCdI9zS3JcoSSMFSkO8qEj4Y1zzU4zg-/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>Diciembre</td><td><a class="doc-link" href="https://drive.google.com/file/d/1S-lHCtz3IvIpxcbZvzpEni1BIkKKF4T3/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>Diciembre</td><td><a class="doc-link" href="https://drive.google.com/file/d/1DtpSTmbryZIWiNf2AOOnsX0ovd9wxD9k/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2025</td><td>Enero</td><td><a class="doc-link" href="https://drive.google.com/file/d/1GfAcgtLW-O_si3tz6CI4YHsjRCwKhyOb/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2025</td><td>Diciembre</td><td><a class="doc-link" href="https://drive.google.com/file/d/1ZyZUvSguYalK6SpNrdXnTpKKlDvaRxZU/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>Enero</td><td><a class="doc-link" href="https://drive.google.com/file/d/1p3PA2HJDrYindK344oBRFIrxcm38MBaE/edit" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>Mayo</td><td><a class="doc-link" href="https://drive.google.com/file/d/19jNTqyo3PzUzLlt81PDvnFi402FT6kQF/edit" target="_blank">Ver</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Carpeta completa:</strong> <code>BRYAN ROSERO / LIQUIDACION ECONOMICA / [año]</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📚</span> Libros Mayores y Estados de Cuenta</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1xeYWUCeDUyWriwQDqOL9KTscV0M5GmZz/view" target="_blank">Libro Mayor Consolidado (TXT)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/13ByuJInFX82kXZ3z0vOoWn0KRVR0cfv6/view" target="_blank">Mayor Reexpedidas desde 2021</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1ZOc7N8K9TxzN5p8cH7P_zTQJvJYYkx8m/view" target="_blank">Mayor 1198 desde 2021</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1O9fepY1WlOg5lym9ZHKz6CY4wD0TrGDG/view" target="_blank">Estado de Cuenta 2023</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1V6q-VmSS7zvBtpwtvgwkeKmiQytYb9ts/view" target="_blank">Estado de Cuenta 2025</a></li>
+            </ul>
+            <p><strong>Estados de cuenta Banco Pichincha 2021-2025:</strong> carpeta <code>ISSFA CONSOLIDADO / ESTADOS DE CUENTA</code> (más de 40 archivos PDF).</p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAPP -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-papp">
+        <div class="card">
+            <h3><span class="icon">📋</span> PAPP – Plan Anual de Presupuesto y Proyectos</h3>
+            <p>El PAPP es el instrumento de planificación presupuestaria y de proyectos de factibilidad del CEE. A continuación se detallan los PAPP elaborados y publicados durante la gestión.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📅</span> PAPP por Año</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Año</th><th>Documento</th><th>Tipo</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>2023</td><td>Presupuesto Policlínico 2023</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1U5NLAuh2sqADGAq9nmiOzINS_Fbrek-k/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>Presupuesto Policlínico 2024</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1I4Z_8s_O0vbhuo-G46bX-zsiBh83KOWn/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2025</td><td>Presupuesto Policlínico 2025</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1KQnHFqG3W3iJCvYmNjERzdMYIBwhaUvT/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>PAPP 2026 POL-CEE</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1qQKRxCNhFKCydjlF1xEeSdna9r4f906Z/view" target="_blank">Ver</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📄</span> Proyectos de Factibilidad y Lineamientos</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1hac2jhh5aDnQuLOlv8Ihiwia9plK9IGp/view" target="_blank">Anexo 01 – Formato Proyectos de Factibilidad 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1nHMHWSQOTWe5NK2RjA9STauTEZ-_IPDB/edit" target="_blank">Formato Proyectos de Factibilidad 2025 (Word)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1upQK9zeqLpC-eQAvc4pe5tlNMMBYXAyj/view" target="_blank">Lineamientos PAPP CEE 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1TuIkxV3t0knXdW1Rt_7L2uWE0_wg9Zmr/view" target="_blank">Matriz Techos Presupuesto Gasto Corriente CEE 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1drOwJWaeTjZdogpw19LlZ7BstKm24WcA/edit" target="_blank">Proyección Presupuesto 2025 (Excel)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/179nQp4MIL2SCEuZOhuod6_QcefX7mYUa/edit" target="_blank">Techo Presupuestario Año 2025 (Excel)</a></li>
+            </ul>
+        </div>
+
+        <div class="nota"><strong>📌</strong> La carpeta completa de PAPP se encuentra en <code>INFORMES / PAPP</code> y <code>PRESUPUESTO / PAPP</code>. Los documentos incluyen versiones firmadas y publicadas.</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAC -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-pac">
+        <div class="card">
+            <h3><span class="icon">📑</span> PAC – Plan Anual de Contratación</h3>
+            <p>El PAC es el instrumento que planifica las contrataciones de bienes, servicios y obras del CEE. Se elaboraron PAC anuales, reprogramaciones, reformas y certificaciones presupuestarias.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📅</span> PAC por Año</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Año</th><th>Documento</th><th>Tipo</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>2023</td><td>PAC Policlínico CEE 2023 firmado</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/18GN3ANsEHf0VNdk0fcs5-1tndtqzgfAB/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2023</td><td>PAC Policlínico CEE 2023 (sin firmar)</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1LwW44yXctMN-DXG_v0U0wmvw8CsHsaKq/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>PAC Policlínico CEE 2024</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1yZ_2ZNiWogbiqdJ0KTRfTZ0HLNrgZJLD/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2024</td><td>PAC Policlínico CEE 2024 (3T)</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1F02uzyyQ2WBIXOWkarIEKQ2UppToUooo/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2025</td><td>PAC POL CEE 2025</td><td><span class="badge badge-pdf">PDF</span></td><td><a class="doc-link" href="https://drive.google.com/file/d/1FEmWMRzcudxzzNSg9Sqs_E9Kmzt2CcwT/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>2026</td><td>PAC POL CEE 2026</td><td><span class="badge badge-pdf">PDF</span></td><td>En carpeta <code>PRESUPUESTO</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🔄</span> Reprogramaciones y Reformas</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1HWRyea00O4VOtL__ZPZszYegQXyxijg6/view" target="_blank">Reforma Horas Extra por Logística</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1jfK3Wt6OdoZ_96Qq79ozVMgF0sr4baHD/view" target="_blank">Reforma Mantenimiento POLCEE</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1VuqXHPCV5Lz7nD7RVxh14FcyJh5Iaykw/view" target="_blank">Incremento Presupuestario Junio 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1JfZmRxBN6a2GqHfrf5g8pgwn4epSjruZ/view" target="_blank">Reprogramación Mantenimiento Junio 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1jQfm-hoxMtRj7oM70O_lPln47NEtB_Dy/view" target="_blank">Reforma PAC Anulación 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1d80Ar_WA_OwEx8LbaPJAG7xaPq-6_qGu/view" target="_blank">PAC POL CEE 2025 Modificación</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1vhrUe1uWrazZ31uKmla_Xe66NguR2rzC/view" target="_blank">PAC POL CEE 2025 Eliminación</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1F08peNCY92SrwGGP1RQS10OO4klpuq4Z/view" target="_blank">PAC POL CEE 2025 Modificación (2)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">✅</span> Certificaciones Presupuestarias y Anexos</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1LeLchRVcjpn8nQkh3NlseTKm6kdtZsEI/view" target="_blank">Anexo 03 Reforma Presupuestaria POL CEE</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1NtX6YL7KUrMQITdCGnEklI28S3HC0b6F/view" target="_blank">Anexo 03 Reforma Presupuestaria POL CEE (PDF)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1uHQDG6P8v73ln4g2g6gk-b5nfPF2a0oT/edit" target="_blank">Anexo 03 Reforma Presupuestaria ABR POL CEE (Word)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1F02uzyyQ2WBIXOWkarIEKQ2UppToUooo/view" target="_blank">PAC POL CEE 2025 Modificación Septiembre</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/18V0mVcIOFGMCoR66NihWlEgthYQf4zjW/view" target="_blank">Reforma 188 POL - CEE</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1v35Q2X7ut38MnSalejSXagcQDRgyXX_y/view" target="_blank">Reforma Insumos Médicos POL-CEE</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1z52rgu1UeeHTr4ZvGyhOQ2ZNZChMGnXr/view" target="_blank">Reforma 189 POL - CEE</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MEMOS Y OFICIOS -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-memos">
+        <div class="card">
+            <h3><span class="icon">📬</span> Memorandos y Oficios</h3>
+            <p>Esta sección agrupa los oficios y memorandos generados y recibidos durante la gestión: oficios de planillaje, oficios de cobro, oficios de reexpedición, comunicaciones con Contraloría, y memorandos internos.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📄</span> Oficios de Planillaje</h3>
+            <p>Se emitieron oficios de planillaje mensuales para comunicar las planillas procesadas y facturadas. Ejemplos:</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>N°</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>Oficio_planillaje (45)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1Vrl1BEgGJmjK_21bTrUudP3f3YZlnE_p/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (46)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1hmfGr-iC0QadlIOYhXzxLcL-bY3Z2-CJ/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (51)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1B2oENpvmLFUJH5pg1_nR9DW_IIo8bdKq/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (53)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1wjkAOrSaG3skNH7vGSDWepszOM0XjYk9/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (63)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1hJt5Efv8IZQMg8Rput3uHn4oh8HkX4ID/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (64)</td><td><a class="doc-link" href="https://drive.google.com/file/d/11iZkolbtvgHsowntCLxiIF8JxqWYKJaH/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (65)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1LxIh-xRzVZByMEAvJrgejqe57DAirNMp/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (66)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1MOduiSMvdEeF7G26YfUGtqyOhgTmzk-v/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (67)</td><td><a class="doc-link" href="https://drive.google.com/file/d/11M-JKrdjvlLvbf_xpikVbcRaaPRi8QF1/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (68)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1XWGB22tfe8SKNkUtGns2uGg31xy3wjYD/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Oficio_planillaje (69)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1PqP_jJ_UZHr3Pyk_XFE-Ce_uPPin3AlE/view" target="_blank">Ver</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Carpeta completa:</strong> <code>DESCARGAS DEL EQUIPO / Oficio_planillaje</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">💼</span> Oficios de Cobro (ISSFA, IESS, MSP, ISSPOL)</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1aX3AWnzJ-3hEnL1wtUoI2LEWwUL7cF9x/view" target="_blank">Oficio Gestión Cobro ISSFA 2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1MdALKUqVDqCECcno0dZFWCyqKjbam3LG/view" target="_blank">Solicitud CxC ISSFA 2026-0001-EXT</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1BPVhsnsg9kdFKUJt8bm3DedHKcbuGZIk/view" target="_blank">Solicitud CxC ISSFA 2026-0098-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1xuBPPdFxhdLRaiYl4izjvb3ugCi_Hn-M/view" target="_blank">Solicitud a DEP Jurídico CxC IESS-ISSFA</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1LDG4swySJEAqSIFpQHBhw_DRAwWAkBVV/view" target="_blank">Doy Conocimiento de CxC POL</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1t8z4yeg6RnAp_RzTUckKrMgUWWl9poCn/view" target="_blank">Cuentas Cobradas ISSFA 2026</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📤</span> Oficios de Reexpedición</h3>
+            <p>Oficios para solicitar la reexpedición de facturas y valores no reconocidos por ISSFA.</p>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1QOuP1b3kerXm9VmXXS2O9l6wuIStwA7u/view" target="_blank">Oficio 147029 (11-06-2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1BP0c_-ozSqHal6kt-xLVmm9ZAxbP8Ipj/view" target="_blank">Oficio 144007 (11-06-2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1OMGR67nZzBPyLGv8a50gHhpYwsFs7MmB/view" target="_blank">Oficio 148892 (11-06-2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1TYnh_jcSflK02QsxGUFcLzyrhJvcVz3D/view" target="_blank">Oficio 150238 (11-06-2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/10Ai9Ngl4uQP53FRqfgh7y3nodBPOKGUg/view" target="_blank">Oficio 147950 (11-06-2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1NtG6boTlNivb9iKcaHs56TAQjbSJCNtb/view" target="_blank">Oficio 149037 (cero aceptación)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1wIPDTQm9RXrdphjgFKmjeIccBLIo_fbf/view" target="_blank">Oficio 153187 (cero aceptación)</a></li>
+                <li><a href="https://drive.google.com/file/d/1BJ8ADhl2rSfgFNqJvWPsSaxedayAVGn-/view" target="_blank" class="doc-link">Oficio 147030 (cero aceptación)</a></li>
+            </ul>
+            <p><strong>Carpeta:</strong> <code>VALORES NO REC zhamungui / enviados 11-06-2026</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏛️</span> Oficios de los Balances</h3>
+            <p>Oficios que acompañan el envío de balances mensuales a las instancias correspondientes.</p>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1xyQZPDdhVaGYCL9iTqVvQddxtlMSiue_/view" target="_blank">FT-CEE-US-2024-0689-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/16RTZnTDiPPGIVw5H5LA_R27lNremmyEy/view" target="_blank">FT-CEE-US-2024-0582-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1pPRCdsyzZT_afqQu1pEm9GHlhTeuRl5J/view" target="_blank">FT-CEE-US-2024-0499-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1EX4lEKyG6-BhHBe10C9EiwBp1d58t6mE/view" target="_blank">FT-CEE-US-2024-0416-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1Ce7BmZgPVR_VE0xrHUnFlhG-9W6N-gTd/view" target="_blank">FT-CEE-US-2024-0329-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/15uf93bI3KUeXTrDcQEIyXBsnSrqtues2/view" target="_blank">FT-CEE-US-2024-0284-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1QtOKofbNHZaYyGcb5FkRGcIBdQ5xEX4D/view" target="_blank">FT-CEE-US-2024-0942-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1CA9oDsLC32itPDJNtR7f5p_D_DfmziPx/view" target="_blank">FT-CEE-US-2024-1062-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1hhLoTp6jXE1U5EcjRf-_OLIAubKQl-cE/view" target="_blank">FT-CEE-US-2024-0809-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1U7gNfgH_ZubiC8zj_UgADnPti3LEfm6m/view" target="_blank">FT-CEE-POLI-2025-0190-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1WoAX7GG_Qn5eeK_cK5Iz78g4JA1JDp7U/view" target="_blank">FT-CEE-POLI-2025-0264-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1AJ9KjJjDtKCxF9XHgS1GBgiV2YCCLckG/view" target="_blank">FT-CEE-POLI-2025-0393-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1P__UYafUeLIvc6NJztbNy3qtFUjC2nr1/view" target="_blank">FT-CEE-POLI-2025-0428-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1gdQ7-matmvgkt1w4COwOQLH-3z-leGlL/view" target="_blank">FT-CEE-POLI-2025-0533-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1PoXDLmHPaNUdkLVrkC1tvdJs2_XhBaxj/view" target="_blank">FT-CEE-POLI-2025-0592-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1r_yifuBFl8NKzrl3B8Yhj8C0gq01_jmJ/view" target="_blank">FT-CEE-POLI-2025-0745-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/14vIz2LBKhjhiv0z2yzUETaFDvqCXNHok/view" target="_blank">FT-CEE-POLI-2025-0856-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1z2g01nDa7EDUlssNpGuccpjD0LnT3WhO/view" target="_blank">FT-CEE-POLI-2025-0984-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1b9kUiXDmr-gCovlZMA_cIVy4kglH2d7g/view" target="_blank">FT-CEE-POLI-2025-1155-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1GsVpxVjwYApPn89K1dZ7Rw4H7jyCArJ6/view" target="_blank">FT-CEE-POLI-2025-1286-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1uQVbRLyDmetDKXVbyuCSQL_P8LE9HWyb/view" target="_blank">FT-CEE-POLI-2025-1392-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1TqaxuMY7-BnFyj90zN-EMcyqBmqqJCno/view" target="_blank">FT-CEE-POLI-2026-0256-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1eQRZh74nnLT7yLniFNjSnx-MjrRaPE-2/view" target="_blank">FT-CEE-POLI-2026-0056-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1N1o9mo7vBGxw-nzT9yWUfUXNArmI3jhT/view" target="_blank">FT-CEE-POLI-2026-0159-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1aM9aB9i9xt9iJRY43rDWQMJQyI7EbHZz/view" target="_blank">FT-CEE-POLI-2026-0363-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1vBGTu12HPMI4g22YRJM_HIf8XdvV871p/view" target="_blank">FT-CEE-POLI-2026-0455-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1SgvPgb8iwFkty240M2MPuJZixkrnBae6/view" target="_blank">FT-CEE-POLI-2026-0580-O</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📝</span> Memorandos Internos</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1giYFQppyvN1gZMfOFF9EPnyIJ-luePHd/view" target="_blank">Memorando 15-1 FT-CEE-CEE-DTH-2026-0986-M</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1UNVcYaY3r7-QVdxzTuwQC4kVpxH3Kvz9/view" target="_blank">Memorando 16 FT-CEE-POLI-2026-0137-M</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1WPnynj8qNxlju9gVLZnZdhXdemKp5Ydn/view" target="_blank">Memorando 14 FT-CEE-CEE-DTH-2026-0708-M</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1ecalPPhxRKU40mm4murCtV1J0hSrWm06/view" target="_blank">Memorando 13 FT-CEE-DF-2026-1083-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1hz5euERPwyBkvvbHKUD_7HqRdKRQ6qez/view" target="_blank">Memorando 09 FT-CEE-DF-2026-0849-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1sN_dMawF2Xng9xAnWieIwoROwHm3Tp5m/view" target="_blank">Memorando 08 FT-CEE-DTH-2026-0133-M</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1JJyuR8t-AjxJCK0yIPTlOeVOcSu5RA7T/view" target="_blank">Memorando 11 FT-CEE-DF-2026-1041-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1SsxuuAMFPYFx9DA0KuYPz9ozdLKdHASL/view" target="_blank">Memorando 12 FT-CEE-POLI-2026-0365-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1HUrBmHAOjL9o8I6Zwrj7C8U_QZWlXHRq/view" target="_blank">Memorando 04 FT-CEE-POLI-2026-0032-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1OPx9GWYUkUa7dEu7Z1KLL3iiaxp4PyV8/view" target="_blank">Memorando 06 FT-CEE-DF-2026-0766-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1memerpPAH_h_t9LsBKo6YFGe29S5LNaO/view" target="_blank">Memorando 10 FT-CEE-DPGE-2026-0061-M</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/14PyH1f9iHihN6SV5gu0DMDaaoyt5KTtK/view" target="_blank">Memorando 05 FT-CEE-POLI-2026-0265-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/16mxUz1ZdQrdWT1UOk9McLZsjTb0nal1z/view" target="_blank">Memorando 07 FT-CEE-POLI-2026-0075-M</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1XNsiQbKtKPUlaXtOHh-U0kf--KlK7RGD/view" target="_blank">Memorando 03 Informe Necesidad Analista Contable</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/135HnhKuzWUkXApsRDJC6WCFtubj9FiL2/view" target="_blank">Memorando 01 Contrato ROSERO</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/17G8qbbk4NRhDZddtmzNzJW1uNYg-lCMd/view" target="_blank">Memorando 02 Actividades (JPG)</a></li>
+            </ul>
+            <p><strong>Carpeta:</strong> <code>DOCUMENTACION RESPALDO / MEMORANDOS Y OFICIOS</code></p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- AUDITORÍA INTERNA -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-auditoria">
+        <div class="card">
+            <h3><span class="icon">🔍</span> Auditoría Interna</h3>
+            <p>Esta sección documenta la auditoría interna realizada en 2024, el seguimiento de auditoría, los descargos de responsabilidad y los anexos generados.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📋</span> Auditoría Contraloría 2024</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1DPy2tslM8YgpEDYwy3DCoffgZ61DpHvW/view" target="_blank">Informe DNAI-AI-0130-2020 C.E.E</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1g05mVUHQsP3Jrcv7YC-ivRbX0sC9EqWo/view" target="_blank">Informe de Auditoría Aprobado DAI-AI-1082-2016 (Ingresos Policlínico)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1s3pIu9esLGx56TAfXCfY3dOufzt7DCWv/view" target="_blank">Resultado de Contraloría 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1qEIxUyBzTrdxKxx9B-bYo-B_TPMJHAJC/view" target="_blank">DNA1-0063-2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1XHi1ymXTUNmPK4MT7fQYxfW9sQfSnC4d/view" target="_blank">DNA1-0063-2024 (copia)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1mueSK6hAIuhmYCABDFFKp7H5ood99SjJ/view" target="_blank">Se remite Informe DNA1-0063-2024</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📎</span> Descargos de Responsabilidad y Anexos (01 al 10)</h3>
+            <p>Se elaboraron descargos de responsabilidad con sus respectivos anexos para responder a las observaciones de Contraloría.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Anexo</th><th>Descripción</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>Anexo 01</td><td>Contrato ROSERO</td><td><a class="doc-link" href="https://drive.google.com/file/d/1qnFsOnbyvbrCN_J6XanbQoi4XzWo1dD2/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 02</td><td>Actividades</td><td><a class="doc-link" href="https://drive.google.com/file/d/1JcgObNz6dyOAC_RDqtZs4nblgEzbwCUQ/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 03</td><td>Análisis Cuenta REEX</td><td><a class="doc-link" href="https://drive.google.com/file/d/1Oy6JS10u5gLUbpTsNPfdHvG8xaC5HD6V/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 04</td><td>Balance Comparativo 31 Dic 2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1LL6tSasiqrlwVSQt9gBI_goq0dS2lIV6/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 05</td><td>FT-CED-US-2024-0383-O</td><td><a class="doc-link" href="https://drive.google.com/file/d/1ORyYS1ShD8urXKnapsidnLKKqgdSGORi/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 06</td><td>Documentos 2019 a Junio 2020</td><td><a class="doc-link" href="https://drive.google.com/file/d/1UcFp9VvbiNNtJDJg9cKzwjI5SOfjDqYP/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 07</td><td>Documentos Julio 2020 a Diciembre 2021</td><td><a class="doc-link" href="https://drive.google.com/file/d/1_22mTkiqkhf-9ugtZIWY2CenIv7bbowL/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 08</td><td>FT-CEE-US-2024-0261-O</td><td><a class="doc-link" href="https://drive.google.com/file/d/1CRMbzCyQIdEc5gK9xGVRgneVGWmBAMXq/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 09</td><td>Reg 54 y Facturas</td><td><a class="doc-link" href="https://drive.google.com/file/d/12It4y0Lxea064Vim5XL5sAcghp61U9VP/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Anexo 10</td><td>OF 0434</td><td><a class="doc-link" href="https://drive.google.com/file/d/1zEQISRV9bLMw6dWAT9dldVRQc29Yd9b2/view" target="_blank">Ver</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📘</span> Manual de Procedimientos y Seguimiento</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1v4MjIakoe9kAIUOkpZ_8eArjHpLrAB3E/view" target="_blank">Manual de Procedimientos Actualizado para Registros Contables 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1BtfzpV8CIV_f9hRQa34_DQpFm2tIUDh2/edit" target="_blank">Manual de Procedimientos (Word)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/13z-HGgkz7uvWS54IGZIs715oVEQUXfm8/view" target="_blank">Manual de Procedimientos (firmado)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1Kf66XUJnU_PPnUmKUFcYr9Z4ocdD92f-/view" target="_blank">Diario 211 (Seguimiento Auditoría)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/13VaZ6lEMOxYIJZ3n1r6eEZBC-fJotRtE/view" target="_blank">Diario 231</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/14sV0ZNzw9DKYAywg9K6OrywwX6nmbCqh/view" target="_blank">Diario 210</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1k4-qzsRMIeGdGmAFKcmNXGKqwtARRldH/view" target="_blank">Diario 165</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1q0XJf_AnrdqQVUo_tRbwrjD3IX7r5v6_/view" target="_blank">Diario 151</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1tdJDodx81oolbk6JpZhbv6GXdJbOcqMi/view" target="_blank">Diario 148</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- CONTRALORÍA -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-contraloria">
+        <div class="card">
+            <h3><span class="icon">⚖️</span> Contraloría</h3>
+            <p>Esta sección agrupa los documentos relacionados con la Contraloría General del Estado: resultados de auditoría, oficios de predeterminación, auditorías médicas, valores no recuperables y oficios de respuesta.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📄</span> Resultados y Oficios de Contraloría</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1s3pIu9esLGx56TAfXCfY3dOufzt7DCWv/view" target="_blank">Resultado de Contraloría 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1OQAo7R1XvG6UTOpmV3aH47EX8yGPx9N-/view" target="_blank">Informe de Reexpedición Año 2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1LExquK_W9hCDmOD2c1F-WPFbZnZkAVai/view" target="_blank">Informe de Reexpedición Año 2026 (Mayor Balcázar)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1QOuP1b3kerXm9VmXXS2O9l6wuIStwA7u/view" target="_blank">Oficio 147029</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1pf9hPX_f5-5jwi4QnDuVYimIf5Sr_9Rk/view" target="_blank">Oficio 145027</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1rw7H6VgwFF24-a4q1j0Ff0_O4HqWFLoW/view" target="_blank">Oficio 141347</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏥</span> Auditorías Médicas y Valores No Recuperables</h3>
+            <p>Se gestionaron oficios de auditoría médica y valores no recuperables de ISSFA, incluyendo los años 2017 a 2024.</p>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1eKgIl3k_fbzs_VwdBWrc7zzMhcjD1w_y/view" target="_blank">Oficios Auditoría Médica (escaneados)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1PuqagXexcNni6aCPBLSsQXjilwnf58Id/view" target="_blank">01-a Mayor</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1LzEyaCRE8B3X_KhjmqfFpiJUL0yJ3ked/view" target="_blank">02 Mayor</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1M31iRbE5m-akJ3Nlg1Y6-PalEhsi9oTd/view" target="_blank">Informe Objeciones ISSFA 2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1qtYwGQufLHvolSejDt8ZqdlRKgMA93cI/view" target="_blank">Informe Objeciones ISSFA 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1PUiPVSoYW57M9i2kGGV2g3WDYix3nWDi/view" target="_blank">Resultado de Contraloría 2024 (Valores No Rec)</a></li>
+            </ul>
+            <p><strong>Carpetas:</strong> <code>VALORES NO REC BALCAZAR</code> y <code>VALORES NO REC zhamungui</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📑</span> Oficios de Predeterminación</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1kTEsR4uiUTGZL8sT__8m9U60LVKj-zLV/view" target="_blank">Oficio de Predeterminación 20260514015304</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1fBZfcDK3eVXigjr90daG4gxxtZZ-TCJp/view" target="_blank">Oficio de Predeterminación (copia 2)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1GFMAKAFpjC7-6nFOeJ0h9qeZIl88JyFq/view" target="_blank">Oficio de Predeterminación (copia 1)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1ja4xrlKg-xMwa7aaNUBo150Jv193uXPa/view" target="_blank">Boleta 1725543217</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1umO7f8UScSbFFFoHMbdzclrnXIrrmwXO/view" target="_blank">Boleta 1725543217 (copia 2)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1Nx82C3bjZbXyJ3RjiJxa5PXcbKQmWz6j/view" target="_blank">Boleta 1725543217 (copia 1)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- COBROS Y FACTURACIÓN -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-cobros">
+        <div class="card">
+            <h3><span class="icon">💼</span> Cobros y Facturación</h3>
+            <p>Esta sección agrupa la gestión de cobros y facturación a las diferentes entidades: ISSFA, IESS, MSP e ISSPOL.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏛️</span> ISSFA</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1ypvSGsEal9XRkDWfZi7YAbB7j9MLOWer/view" target="_blank">Reporte ISSFA x Cobrar Octubre 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1IIgvMWwGiUVVAQViGi_xkJW8qCL5DWCg/view" target="_blank">Reporte ISSFA x Cobrar Octubre 2024 (copia)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1TJmzfWqh-norOxyKgsGUfpvg1m81zNK4/edit" target="_blank">Trámites de Cobro ISSFA-IESS 2020-2026 (Excel)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1HaXOOUR2B_POyw4Qwz-0GKFKzpm2zbIF/edit" target="_blank">Reporte ISSFA x Cobrar (Mayo 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1XcmbcpIHp0X8e2VgSRXkrMwBCgdNjhVQ/view" target="_blank">Informe Objeciones ISSFA 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1YbeFAyGfYCSu5X5fRpDVwhyFs84fWv0H/edit" target="_blank">Reporte ISSFA x Cobrar (Marzo 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1CEo5MvXJitd_1o7zMMoLq42JXtv_zCER/edit" target="_blank">Reporte ISSFA x Cobrar (Abril 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1gOicCMti0fclOeQAm6WgXSRWVTKXF2nx/edit" target="_blank">Reporte ISSFA x Cobrar (Julio 2026)</a></li>
+            </ul>
+            <p><strong>Carpetas:</strong> <code>ISSFA CONSOLIDADO</code>, <code>REPORTE ISSFA X COBRAR</code>, <code>TRAMITES DE COBRO</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏥</span> IESS</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1nx5NASYtu-Tvwq_MYkqH-Vpgc4TAy8Lh/view" target="_blank">CCFFAA-DISAFA-2024-0282-E (IESS)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1ZRSUlqY390vdPywZBlCn-tQueMKaFSZ6/edit" target="_blank">Facturas Pagadas Cuerpo de Ingenieros (Excel)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1PdlMsOyZSWy-r0UNFVfLlt6UBfwADz6V/view" target="_blank">Facturas IESS Pendientes</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1G5Ok9i5OjsaMYVlaayCJYQBQoucZ8Hrw/view" target="_blank">Pago Factura N. 9313 de la FF.AA.</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1ENPdGFI58YUDzBKWD8sGCBpzyleGD8dr/view" target="_blank">IESS Not Pago Lote</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1kMfDjJ9s_eJgTnJ7g7pbUTgodnyHq-wF/view" target="_blank">IESS Not Pago Saldo Inicial</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1wjluXnkCAbHFu6GNx_PKYlSDDDxmYVNw/view" target="_blank">IESS Not Pago Saldo Inicial (Persistencia 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/190kc1Jt72a3IpFtNy-ua3CjyhVFzyYDE/view" target="_blank">Facturas IESS Pendientes (Persistencia 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1NwWeisKLh1GscBzqHCEaELmsA8-ZX5cC/view" target="_blank">Pago Factura N. 9313 (Persistencia 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1136hRIWPzaYPYXUn4FlMxq8H188PUGS-/view" target="_blank">CCFFAA-DISAFA-2024-0199-O (Persistencia 2026)</a></li>
+            </ul>
+            <p><strong>Carpetas:</strong> <code>IESS</code>, <code>TRAMITE 186069</code>, <code>IESS INF PAGOS</code>, <code>PERSISTENCIA 2026</code></p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏛️</span> MSP (Ministerio de Salud Pública)</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1jbYnM1jGm5qe4bGshznrtNISSdP6nzaC/edit" target="_blank">Reporte MSP (Mayo 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1awpwgDVxgqCbL2_G13-zcussCR04GL96/edit" target="_blank">Reporte MSP (Abril 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1JfEy_XIpGZy4NkckCKRzOuwiOBcgwNBf/edit" target="_blank">Reporte MSP (Marzo 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/12pwl4g8RcPOaxja17I7KS2prrDTlEcWY/edit" target="_blank">Reporte MSP (Febrero 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1kSHMKT6sSM2aiIj2WUwIAyMTsppNBXfg/edit" target="_blank">Reporte MSP (Enero 2026)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏦</span> ISSPOL</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1bv-9XWP4mDWbW71wlCvuy4v5xwQ43DMZ/edit" target="_blank">Reporte ISSPOL (Mayo 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/12GLx1jxE3vBq46kXntGaJ3RzGqpAOOzC/edit" target="_blank">Reporte ISSPOL (Abril 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1afTGEwWzzaT7NgRNAQPZyu-bNiE99X_H/edit" target="_blank">Reporte ISSPOL (Marzo 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/13ixXPlKxFH6N7eqZYEYWbBg9F9P9Luzg/edit" target="_blank">Reporte ISSPOL (Febrero 2026)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1fWM5PaI5rG_6N3bqLWsosmY93Pfu-gMa/edit" target="_blank">Reporte ISSPOL (Enero 2026)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📊</span> Cuentas por Cobrar y Estados de Cuenta</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1TJmzfWqh-norOxyKgsGUfpvg1m81zNK4/edit" target="_blank">Trámites de Cobro ISSFA-IESS 2020-2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1HaXOOUR2B_POyw4Qwz-0GKFKzpm2zbIF/edit" target="_blank">Reporte ISSFA x Cobrar</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1uY-StGs_W3DKnqs3YwGbCmfAv-7o7ZED/view" target="_blank">Valores Adeudados 2024 Mayo</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1S-sKXk_eNEwwZiByuDPtL9T8vEzqVIZ-/view" target="_blank">Valores Adeudados 2024 Mayo (firmado)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1bmdp74Ud9c5O40ck3S3_B1HYvVl1zWp8/edit" target="_blank">Valores Adeudados 2024 Mayo (Excel)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PLANILLAJE -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-planillaje">
+        <div class="card">
+            <h3><span class="icon">🧾</span> Planillaje</h3>
+            <p>Esta sección agrupa el procesamiento de planillas de médicos, odontólogos, laboratorio y fisioterapia, así como los reportes de liquidaciones y los oficios de planillaje.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📅</span> Planillaje por Año</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Año</th><th>Documentos</th><th>Enlace de ejemplo</th></tr></thead>
+                    <tbody>
+                        <tr><td>2022</td><td>Planillas procesadas y facturadas (sep-dic)</td><td><a class="doc-link" href="https://drive.google.com/file/d/188073q1Tw3PtoMLgOPAahgZp4SgoUMH0/edit" target="_blank">Ver septiembre</a></td></tr>
+                        <tr><td>2023</td><td>Planillas procesadas y facturadas (ene-dic)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1VQaESuNhdjD1aax-1yHa4rp_spc3NgLI/edit" target="_blank">Ver marzo</a></td></tr>
+                        <tr><td>2024</td><td>Planillas procesadas y facturadas (ene-dic)</td><td><a class="doc-link" href="https://drive.google.com/file/d/1qzBWiwTkvlid7ThuqEgdyRJOAJ4Vo8Rv/edit" target="_blank">Ver marzo</a></td></tr>
+                        <tr><td>2025</td><td>Planillas procesadas y facturadas (ene-dic)</td><td>En carpeta <code>PLANILLAJE / 2025</code></td></tr>
+                        <tr><td>2026</td><td>Planillas procesadas y facturadas (ene-may)</td><td>En carpeta <code>PLANILLAJE / 2026</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🩺</span> Planillaje por Especialidad – Ejemplos</h3>
+            <ul>
+                <li><strong>Médicos:</strong> <a class="doc-link" href="https://drive.google.com/file/d/1a86mcFKd6ySSuzM8lDJE9deZdOTIcZnR/edit" target="_blank">Julio 2025</a>, <a class="doc-link" href="https://drive.google.com/file/d/16mEQLbKzdOy74Fbxc94gtquj-3iuWM2-/edit" target="_blank">Abril 2025</a>, <a class="doc-link" href="https://drive.google.com/file/d/1TSZuTeQggspLSt7n3fI9XReV2pzyx4zX/edit" target="_blank">Febrero 2025</a></li>
+                <li><strong>Odontología:</strong> <a class="doc-link" href="https://drive.google.com/file/d/1YmtLyedsRGIDlG6f9XJEK9zS8p0T-neI/edit" target="_blank">Junio 2023</a>, <a class="doc-link" href="https://drive.google.com/file/d/14V-S5K2vGDkaZKvKB1ombsg2ClhboomI/edit" target="_blank">Abril 2025</a>, <a class="doc-link" href="https://drive.google.com/file/d/1_EFW1XHfZH2PCpGgOs_TlRX_rUZ8QQne/edit" target="_blank">Febrero 2025</a></li>
+                <li><strong>Laboratorio:</strong> <a class="doc-link" href="https://drive.google.com/file/d/1spK0p1-dr-xm5YRlsoLWiy0PuDBKiR3h/edit" target="_blank">Julio 2025</a>, <a class="doc-link" href="https://drive.google.com/file/d/1ojXSq_JWLYXdOpaITc6_JuxIDTVlbn_J/edit" target="_blank">Abril 2025</a>, <a class="doc-link" href="https://drive.google.com/file/d/1xZutwIu6iwV98dx8bYIJYTgH0Lqogzal/edit" target="_blank">Febrero 2025</a></li>
+                <li><strong>Fisioterapia:</strong> <a class="doc-link" href="https://drive.google.com/file/d/1WAJdldIfHcYeN-P_Birhc_kx7wLxmP22/edit" target="_blank">Mayo 2024</a>, <a class="doc-link" href="https://drive.google.com/file/d/1S6y5-prcEYMVTjtAEf1Oy2Yu-NY-itUl/edit" target="_blank">Febrero 2025</a>, <a class="doc-link" href="https://drive.google.com/file/d/11rumiC_KzLBCxPIxS_vxoH381Ocw2egW/edit" target="_blank">Agosto 2025</a>, <a class="doc-link" href="https://drive.google.com/file/d/1n-lCGVZ7otPQCaE-PI4tW6NjfFn5S3-m/edit" target="_blank">Enero 2025</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📄</span> Oficios de Planillaje (Listado Extendido)</h3>
+            <p>Los oficios de planillaje comunican mensualmente las planillas procesadas y facturadas. Se emitieron más de 80 oficios durante la gestión. Aquí una muestra extendida:</p>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1Vrl1BEgGJmjK_21bTrUudP3f3YZlnE_p/view" target="_blank">Oficio_planillaje (45)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1hmfGr-iC0QadlIOYhXzxLcL-bY3Z2-CJ/view" target="_blank">Oficio_planillaje (46)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1B2oENpvmLFUJH5pg1_nR9DW_IIo8bdKq/view" target="_blank">Oficio_planillaje (51)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1wjkAOrSaG3skNH7vGSDWepszOM0XjYk9/view" target="_blank">Oficio_planillaje (53)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1hJt5Efv8IZQMg8Rput3uHn4oh8HkX4ID/view" target="_blank">Oficio_planillaje (63)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/11iZkolbtvgHsowntCLxiIF8JxqWYKJaH/view" target="_blank">Oficio_planillaje (64)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1LxIh-xRzVZByMEAvJrgejqe57DAirNMp/view" target="_blank">Oficio_planillaje (65)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1MOduiSMvdEeF7G26YfUGtqyOhgTmzk-v/view" target="_blank">Oficio_planillaje (66)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/11M-JKrdjvlLvbf_xpikVbcRaaPRi8QF1/view" target="_blank">Oficio_planillaje (67)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1XWGB22tfe8SKNkUtGns2uGg31xy3wjYD/view" target="_blank">Oficio_planillaje (68)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1PqP_jJ_UZHr3Pyk_XFE-Ce_uPPin3AlE/view" target="_blank">Oficio_planillaje (69)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📊</span> Reportes de Liquidaciones Médicas</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1fyfhTyTZUXzO8wvYYyscRffOhZFnA1zw/edit" target="_blank">Reporte Liquidaciones Psicología Agosto 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1WmE24z-gsH1VQMCQd7Yivs9-g_IRbQkd/edit" target="_blank">Reporte Liquidaciones Médicos Mayo 2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/15vEl8vi-Nwv4bsRNgTUaUBY-bDSaveRk/edit" target="_blank">Reporte Liquidaciones Médicos Agosto 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1tVUpOgCkhKTOVhYxO3JV1YBbjSc4L_uL/edit" target="_blank">Reporte Liquidaciones Médicos Agosto 2024 (2)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- RRHH Y PERSONAL -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-rrhh">
+        <div class="card">
+            <h3><span class="icon">👥</span> Recursos Humanos y Personal</h3>
+            <p>Esta sección agrupa contratos, actas de entrega-recepción, certificados laborales, declaraciones, informes de contratación y documentos personales.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📄</span> Contratos y Actas de Entrega-Recepción</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1qnFsOnbyvbrCN_J6XanbQoi4XzWo1dD2/view" target="_blank">Contrato ROSERO</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1CKrkkFjP3X3_4U8vrUyXiGh4auTZrNkX/view" target="_blank">Acta Entrega-Recepción Asistente Contable (PDF)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/16vHcUnHJrDJ65wFn0ZmuxOC9rG61XBPL/edit" target="_blank">Acta Entrega-Recepción Asistente Contable (Word)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1rivoOm4sgLFeYMnczcXXvETnap4jQh2C/edit" target="_blank">Acta Entrega-Recepción (Word, 2026)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🎓</span> Certificados Laborales y Personales</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1J3bgONWfAEhnXEAKRbQyh4TyFSk3k_r-/view" target="_blank">Certificado de Trabajo 2025 – Bryan Rosero</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1WmHiL0vCdE9KRUVIFCKPCn-VSYqvx2P6/view" target="_blank">Certificado de Trabajo 2022 – Bryan Rosero</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1S03imYSSnpdP61p_Y5J0ybMcUIsys8cB/view" target="_blank">Certificado de Trabajo (firmado)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1FQIplABykPlVQ2qmpAa921Xi3N8hzDPI/view" target="_blank">Certificación de Competencias</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1o2BmfhRqsIXr1-SP-EsJWhfdgYnW-UB2/view" target="_blank">Formulario de Postulaciones</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📝</span> Declaraciones y Formularios</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1RiiGoA51X8qAJMVfVjOhUAwtW5xMdjaH/view" target="_blank">Declaración 0703 (firmada)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1M7_qOtY7JF9i687UaL7d4yx58pZidPIz/view" target="_blank">Declaración 0703</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1zjqcJAweTHx--AeyoplodrRYF6Qu2ZP9/view" target="_blank">Formulario Declaración Juramentada 0005CGE2019</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1JtaslQpfYnGpw4KdIqpJ2n2Etcglu-lk/view" target="_blank">Comprobante Recepción 0005CGE2019</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📊</span> Informes de Contratación</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1r2G6BPAyiAUybdaqNCuyicj3rkNt6h2k/view" target="_blank">Informe Contratación BR Analista</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1pz9mboV1GL5DKoev7_lkfwEOPkgUQw6L/edit" target="_blank">Informe Contratación BR Analista 2025 (Word)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1_Zv0kb82WTQPnyN8juhxTNAydR-glhc1/view" target="_blank">Informe Necesidad Analista Contable</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">👤</span> Documentos Personales – Bryan Rosero</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1SjfS8MNEpPPHzw4h5f9qmziBUElKjP90/view" target="_blank">Hoja de Vida Bryan Rosero (PDF)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1lIsY7zEOsr6VnSF0PWZHYgbqNmHyIL2M/edit" target="_blank">Hoja de Vida Bryan Rosero (Word)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/154_j-OXiFZ1lPD8VpDc0SBZuDs2J0hQ3/view" target="_blank">HV Bryan Rosero 2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/12YUvcSoRY01Y66hMA95LOSviqKvco37A/view" target="_blank">Licencia Digital</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1Py47vZyZfSfouaeCedCa3aKAlbSkjGqW/view" target="_blank">Cédula Digital</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1CQNIflJeDItRb7Wz9-EcDgYHuipcft_K/view" target="_blank">Antecedentes Penales</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- LEGAL Y RESPALDO -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-legal">
+        <div class="card">
+            <h3><span class="icon">📁</span> Documentos Legales y de Respaldo</h3>
+            <p>Esta sección agrupa resoluciones, normativas, documentación SRI, SENAE, UAFE y otros documentos legales de respaldo.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📜</span> Resoluciones y Normativas</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1Pgsn1o6woOKTOQ64EqZiZ_TNnSwnEe2g/view" target="_blank">Resolución Cambio de Catálogo de Puestos</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1BJzqi912bZ9XWl_g9LrYE1MeowvHYLqy/view" target="_blank">Resolución SERCOP 2024-0145</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1JzrQDCe8sNNLE9aNjV1X5E191yDYlxYF/view" target="_blank">Reglamento LONSCP Actualizado 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1S-gVDAX2B47x1rtqmBMqxpkenn9a-qVM/view" target="_blank">Tercer Suplemento N° 87 – Registro Oficial</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1cm0SUPD6cyC541QunKOmL8zykQ_3gClJ/view" target="_blank">Reglamento LOIP</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1qtJXtXggWI-ITvOW8IpnSogT0dqJkBEf/view" target="_blank">Ley Orgánica de Integridad Pública</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏦</span> Documentación SRI, SENAE, UAFE</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1AV2_nywz3atE6K3EaWY40IiOXLJQ6qvx/view" target="_blank">NAC-DGERCGC25-00000018 UAFE</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1yVgV7mJsrn24rxWU_eUzgcLN31l1CL0Y/view" target="_blank">NAC-DGERCGC25-00000014 Notas de Crédito</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1S7VLg_7Cc595fTPKeduOiJVjPwJJCOn9/view" target="_blank">Casilleros Nuevos Porcentajes de Retención Marzo 2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1Ft3sQn9zayFVI8lR8XzNYkXaYeCM-B5r/view" target="_blank">NAC-DGERCGC26-00000009 Nuevos Porcentajes de Retención</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📋</span> Otros Documentos Legales</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1q5rE4toMTjsD-jGG8uUOHG_musfGq6X/view" target="_blank">Reforma 93 SIS y POL (firmada)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1fyLs6kB02mRz7aeoBPPgRAr4fwJnkCdc/view" target="_blank">Reforma Febrero 2026 POLCEE (firmada)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1haw-lSwq7rwSiQaqUClTlynMR4692t8w/view" target="_blank">Reforma Enero 2026 POLCEE (firmada)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1EsnoqARc3FzPmmeEwoknbAhOmOoM4sB1/view" target="_blank">Reforma Recolección Desechos (firmada)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SISTEMAS -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-sistemas">
+        <div class="card">
+            <h3><span class="icon">🖥️</span> Sistemas y Tecnología</h3>
+            <p>Esta sección agrupa manuales de VPN, accesos directos al sistema financiero, EPSCAN y otros recursos tecnológicos.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🔐</span> Manuales de VPN</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1EWMixXQ4zXy0GqpSwW_fJpJ8FxzsgVb8/view" target="_blank">Manual Configura VPN</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1s4DZwJ7TxHN0V1d5DnCsrpX26rK6ypgl/view" target="_blank">Manual de Reconfiguración</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1y-d37J8WEjOTXdaGGeZsFGPlo6TrYtnh/view" target="_blank">Manual Reconfigura VPN (2)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1YBCdBABhSSg1MmxoFKR7dz2fLN5R2JW5/view" target="_blank">Manual Configura VPN (1)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">💻</span> Accesos Directos y Sistema Financiero</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1IJTSqL-KbrkG01emnhH_j5PY9xhLO_yN/view" target="_blank">FE-Policlinico (Acceso directo)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1bXqjuaHTuF4t6Tudby3Ag3bND8sHqwgx/view" target="_blank">LIBROMAYORG (Acceso directo)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1RA1NOaUt1ZVKGnHivpV_0SUkQvlrJoq8/view" target="_blank">SIFCEE (Acceso directo)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1XZ_4uw3VUqn1OTYxR-UnxR-tuP2_TUx-/view" target="_blank">COSTOS (Acceso directo)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1L89xuGIRH9qnhmT2rkvRCQKlZfHlqSOe/edit" target="_blank">~$TRAMITES DE COBRO (archivo temporal)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📷</span> EPSCAN – Asientos Contables Escaneados (Muestra Ampliada)</h3>
+            <p>La carpeta <code>EPSCAN</code> contiene los asientos contables escaneados, organizados por año (2022, 2023, 2024, 2025, 2026).</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Asiento</th><th>Año</th><th>Enlace</th></tr></thead>
+                    <tbody>
+                        <tr><td>Asiento 01-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1nunw8iZlqn7lrstQ1AA5ktj0kkXl5yPM/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 02-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/179m9dh0DkhSrfTfsYZX2sw6b-lLzmkj-/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 03-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1IuV3IzogKLgmqEgWuyzelKM_gIO6MOCK/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 04-01</td><td>2026</td><td><a class="doc-link" href="https://drive.google.com/file/d/1aN-lKEBMpY9PiJmSQna2W9DhPZMKY7s8/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 09-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1uRqz4tpKeGGOUItXCO4JK9UwDOw9Y101/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 10-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1sOncKoEHoe2N7UiPFL9ghtRMgUR56cNq/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 11-5</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1moG86OY0G0AwfUbMWP0lLiLWAQuFw4JK/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 11-4</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1xSCr8e20gKAKEENaoiyW2AiTy8xajMAG/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 11-3</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1rBS8R5oszzfYlhkHWEZuG9As8gZlWD3t/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 11-2</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1PDnCqKmsBnWkTU1SzngqSZebCmhbWSg2/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 11-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1vnKl0QDjATu5t4Uo5k3bTnYq3iZwVEbJ/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 12-6</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/15nJUXo6DQjN9MUWQYbedpyMVg2ED067V/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 12-5</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1tpZZK67VLu0gFpve5FSesiWirqszRfvG/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 12-4</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1vDvdgsWqSrbkDDNQjHM5zVAz50GsBgX-/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 12-3</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1mPCXMpjegtE_6-FWiGKvfBMP3_MuTiXw/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 12-2</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/10dIkBg5gnH6bbkrdhbSicWsCWJ7ZfoDO/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 12-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1SFhoJ17ZYFnmY1zRjGK0106DAVx6eTtA/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 08-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1HU4aHes6V8eRxYf2huSeUK2qwjxSk2IS/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 03-2</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1QBvKx20dn8F7UleHarHfdj7OWqbF0YEv/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 03-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1LPSiVMwo_NGA2sZYw-_pkANqQTYcKLM3/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 04-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1WpG53MjBTiurKAW7FBmravv_kksKRGgK/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 05-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/19-HzSLdHcbz-mrnPp5paVOMp_bB3HIx5/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 06-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1w_Eyh74lKt1hLK7hx6mrSna6LckWq8tl/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 07-2</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/13PggRjgfZTXx4RnCI10qM6EEEFPWU54Q/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 07-1</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1fjdeo_3p1oWifGFxeyeICL0FWmkuE3Uo/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 08-3</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1JybfIV1irkM-0BvcL18feq5O5Pv470Jw/view" target="_blank">Ver</a></td></tr>
+                        <tr><td>Asiento 08-2</td><td>2023</td><td><a class="doc-link" href="https://drive.google.com/file/d/1eMj3ErAUelgBXZC0I0G1xodOmEjXpQ01/view" target="_blank">Ver</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- INFO CBOP SALÁN -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-cbop">
+        <div class="card">
+            <h3><span class="icon">📦</span> Información Entregada CBOP Salán</h3>
+            <p>Esta sección contiene la documentación entregada al CBOP Salán, organizada por entidades: MSP, IESS, ISSFA, Balances y Contraloría.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏥</span> MSP</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1svY-BR-KVC6okvowDlZJOPJdqN9Lub6J/view" target="_blank">Informes Cuerpo de Ingenieros del Ejército</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1uOVbzKA92D8c0AyFuoz4zCE9HXwilXrY/view" target="_blank">Cuerpo de Ingenieros 0854777001732774295</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/18Ig1ufbgKEM_Hpmnp4_VakeSIf6TzIi_/view" target="_blank">Cuerpo de Ingenieros 0058089001728486773</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1LG4Bidsq9y6f8G8xj1QLSXG_8AzJB4Fz/view" target="_blank">Policlínico 0505733001742265638</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1hm5vZFc_9xu92q4sySU2t7DCKQt5P3e4/view" target="_blank">Policlínico 2</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1EQCwA2jJXi-1YYpR4ceX1A2L-9fAYus7/view" target="_blank">Cuerpo de Ingenieros 0640387001749589638</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1wnHHSFMa_ydXtFOFx1T02pkFa9fF5q22/view" target="_blank">CCFFAA-DISAFA-2024-0093-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1jqvz00GcxjtsbPrF6Op42kjxTFg2dM9s/view" target="_blank">CEE Notificación Informes de Liquidación Enero 2024</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏥</span> IESS</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/18KMiUTWF5OPO23IOg3uAuEGbHhrH0m6l/view" target="_blank">Correo Insistencia (No hay Quipux)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1RVH3uyLJyVQ8eeyZKlyPAI6Z7PZ7A-Wg/edit" target="_blank">Correo Cruce de Cuentas</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1B3KKBhCUm5IJs8XHvBhbkLWg3FOObpTs/view" target="_blank">CCFFAA-DISAFA-2024-0509-E</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/12aQhZKXsdu8JWmBkwCTjQiE1J_VDqv14/view" target="_blank">CCFFAA-DISAFA-2024-0257-E</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1yrTPnbSReEyJ52RTF7nIJPk3mCdJjZOK/view" target="_blank">IESS-CNIS-2023-0223-M</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1bIaSaTe3HvoXcoY7T8qSxc1u-J6NZOrz/edit" target="_blank">Formato para Ingreso de RPIS (Excel)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1iBxbRd6Fg5om0_I4zCymXXygrsR3AX85/edit" target="_blank">Formato para Ingreso de RPIS (Excel 2)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1AjyBXyaXb8-xOAli6bsD8G_sdiDadNAG/view" target="_blank">CCFFAA-DISAFA-2024-0156-O (1)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1PSdtgsWkv0J-zpKD8qGYa965gZbE5CkL/view" target="_blank">CCFFAA-DISAFA-2024-0082-O (2)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1L6owhSZjXXfESgb8dUYo2euqaaroojsF/view" target="_blank">CCFFAA-DISAFA-2024-0083-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1LhYc3picoPxeheRV-Ty3A__buMqgtIaO/view" target="_blank">CCFFAA-DISAFA-2024-0144-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1xXYOIjBLPkSQUFf0Y2wcMMpZxs1ZYRA0/view" target="_blank">CCFFAA-DISAFA-2024-0156-O</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1lbjeCJMyODIak1JSfUCZINa7S8ykqt44/view" target="_blank">2019. 049 Cuerpo de Ingenieros del Ejército</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏛️</span> ISSFA</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1fdeWT5DIAL_rEFl3tkfz9fO93vhgxhNe/view" target="_blank">Facturación ISSFA 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1t5OF0IDzevU4fFpmatBhqQhIwUcLNfgu/view" target="_blank">Cuerpo de Ingenieros del Ejército 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1w4fZ9hlODq7LsNRq06RzrQDmtqSsFEU6/edit" target="_blank">Cuerpo de Ingenieros del Ejército 2024 (Word)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/18i34bfmEf78esdx1x0EueiZJQ9AwWGkA/view" target="_blank">Trámites de Cobro ISSFA 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1IhwUxFZfQqEBZVGIpcxEcHOiiMpAJeFl/view" target="_blank">Trámites de Cobro ISSFA 2024 (firmado)</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📊</span> Balances</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1G4P0RHQ3U06adjEeXVyQ30RGfZlQ-Vku/view" target="_blank">Todos los Balances Firmados 2022-2026</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/12caLRXCI71k83kAyb-VeDyCF5d46eqey/view" target="_blank">Balance Junio 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1zutWVYp6tLi37rH3UtIo-nnZz2XxOdHv/view" target="_blank">Balance Febrero 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1piZGZXN4mIKyT5pATML5vltjPqftkGqQ/view" target="_blank">Consolidado Enero 2024</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">⚖️</span> Contraloría</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1DPy2tslM8YgpEDYwy3DCoffgZ61DpHvW/view" target="_blank">Informe DNAI-AI-0130-2020</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1s3pIu9esLGx56TAfXCfY3dOufzt7DCWv/view" target="_blank">Resultado de Contraloría 2024</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1OQAo7R1XvG6UTOpmV3aH47EX8yGPx9N-/view" target="_blank">Informe de Reexpedición Año 2026</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DESCARGAS DEL EQUIPO -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-descargas">
+        <div class="card">
+            <h3><span class="icon">📥</span> Descargas del Equipo</h3>
+            <p>Esta sección agrupa documentos varios del equipo: compras, códigos, normativas, capacitaciones, certificados y otros archivos de trabajo.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📄</span> Documentos de Compras y Contratación</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1NOo8bNa4J_o1BmH8ex1NH7yy8TPF4AVD/edit" target="_blank">Compra 3 Autos SUV Kia (Matriz)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1ySl2ut7uRYIP4z9-kVtwDjrjfN_sMawC/view" target="_blank">LOSNCP 2025</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1MvlHOetK2XFXY8fqdguBP7Nqm2MopO5h/view" target="_blank">COGEP Act Feb 2021</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1yXQsqkejmn9X1addW0iS579f8-t4oDcJ/view" target="_blank">Código Planificación Finanzas</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🎓</span> Capacitaciones y Certificados</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/186D8fH_tdgW4ciNs3OucEMVjA5knOsun/view" target="_blank">Código de Ética CEE</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1NAJIOYs4n0ckXDseHcYUouxExsm0ovZa/view" target="_blank">Instructivo para Psicometría Candidatos</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1o4oQpzswdcdha4SwD8PCWrKk4jpPMUIn/view" target="_blank">Certificado Curso Transformación Digital</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1VdzwC-c0tmCj_pJRc3U5na3HT88E96eh/view" target="_blank">Honorabilidad Bryan (firmado)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/11ei_xxbw9cg_JpdUfF4VVC3vyOEflt8m/view" target="_blank">Honorabilidad Bryan</a></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📋</span> Otros Documentos</h3>
+            <ul>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1fHpuYRK2vJPR-XIxP5GZM8CTVN3RnQ5M/view" target="_blank">Informes Cuerpo de Ingenieros del Ejército</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1E0zrD71LJhZEdX7ou9sUt3cvNc6LIuEJ/edit" target="_blank">Facturas Pagadas Cuerpo de Ingenieros (Excel)</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1NjPgcJikHFsWUZiUx01cLQmQa7l_jVUI/view" target="_blank">CCFFAA-DISAFA-2024-0509-E</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1iv_6Ak-QB6m8AJcoH4gc1xBqSjLcBkQ_/view" target="_blank">Cuerpo de Ingenieros 0854777001732774295</a></li>
+                <li><a class="doc-link" href="https://drive.google.com/file/d/1rz4SaOnxHreLDUbYVTVRFJUxhsHEbFGS/view" target="_blank">Cuerpo de Ingenieros 0058089001728486773</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ANEXOS -->
+    <!-- ============================================================ -->
+    <div class="tab-content" id="tab-anexos">
+        <div class="card">
+            <h3><span class="icon">📌</span> Anexos</h3>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📚</span> Glosario de Siglas</h3>
+            <div class="glosario-grid">
+                <div class="glosario-item"><strong>CEE:</strong> Cuerpo de Ingenieros del Ejército</div>
+                <div class="glosario-item"><strong>POL:</strong> Policlínico</div>
+                <div class="glosario-item"><strong>ISSFA:</strong> Instituto de Seguridad Social de las Fuerzas Armadas</div>
+                <div class="glosario-item"><strong>IESS:</strong> Instituto Ecuatoriano de Seguridad Social</div>
+                <div class="glosario-item"><strong>MSP:</strong> Ministerio de Salud Pública</div>
+                <div class="glosario-item"><strong>ISSPOL:</strong> Instituto de Seguridad Social de la Policía Nacional</div>
+                <div class="glosario-item"><strong>PAPP:</strong> Plan Anual de Presupuesto y Proyectos</div>
+                <div class="glosario-item"><strong>PAC:</strong> Plan Anual de Contratación</div>
+                <div class="glosario-item"><strong>EPSCAN:</strong> Asientos Contables Escaneados</div>
+                <div class="glosario-item"><strong>SIFCEE:</strong> Sistema Financiero del CEE</div>
+                <div class="glosario-item"><strong>RPIS:</strong> Registro de Prestadores de Servicios de Salud</div>
+                <div class="glosario-item"><strong>CxC:</strong> Cuentas por Cobrar</div>
+                <div class="glosario-item"><strong>REE X:</strong> Cuenta Reexpedidas</div>
+                <div class="glosario-item"><strong>DNAI:</strong> Dirección Nacional de Auditoría Interna</div>
+                <div class="glosario-item"><strong>UAFE:</strong> Unidad de Análisis Financiero y Económico</div>
+                <div class="glosario-item"><strong>SRI:</strong> Servicio de Rentas Internas</div>
+                <div class="glosario-item"><strong>SENAE:</strong> Servicio Nacional de Aduana del Ecuador</div>
+                <div class="glosario-item"><strong>LONSCP:</strong> Ley Orgánica del Sistema Nacional de Contratación Pública</div>
+                <div class="glosario-item"><strong>SERCOP:</strong> Servicio Nacional de Contratación Pública</div>
+                <div class="glosario-item"><strong>CBOP Salán:</strong> Comando de Apoyo Logístico del Ejército</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📂</span> Inventario Completo</h3>
+            <p>El inventario completo de documentos se encuentra en el archivo <code>INVENTARIO_DOCUMENTOS_POLICLINICO.xlsx</code>, que contiene más de 1000 registros organizados por carpeta, tipo de archivo, fecha de modificación y enlace a Google Drive.</p>
+            <p><strong>Estructura de carpetas principal:</strong></p>
+            <ul>
+                <li><code>POLICLINICO / POLICLINICO</code> – Documentos generales</li>
+                <li><code>POLICLINICO / EQUIPO</code> – Documentación del equipo (la rama más grande)</li>
+                <li><code>POLICLINICO / BRYAN ROSERO</code> – Documentos personales y de gestión</li>
+            </ul>
+            <p><strong>Subcarpetas clave:</strong> <code>INFORMACION ENTREGADA CBOP SALAN</code>, <code>DESCARGAS DEL EQUIPO</code>, <code>CONTRALORIA 2024 AUD INTERNA</code>, <code>ISSFA CONSOLIDADO</code>, <code>BALANCES</code>, <code>LIQUIDACION ECONOMICA</code>, <code>PLANILLAJE</code>, <code>INFORMES</code>, <code>policlinico sis</code>.</p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📝</span> Notas y Observaciones</h3>
+            <ul>
+                <li>Esta ayuda memoria se basa en el inventario documental generado durante la gestión 2022–2026.</li>
+                <li>Los enlaces incluidos corresponden a documentos clave; el resto se encuentra en la carpeta original de Google Drive.</li>
+                <li>Los documentos están organizados por categorías temáticas para facilitar su consulta.</li>
+                <li>Para cualquier consulta adicional, se puede acceder directamente al inventario Excel o a la carpeta <code>POLICLINICO</code> en Google Drive.</li>
+            </ul>
+        </div>
+
+        <div class="nota">
+            <strong>📌</strong> Esta ayuda memoria fue elaborada como respaldo documental de la gestión realizada en el Policlínico del Cuerpo de Ingenieros del Ejército durante el período 2022–2026. Todos los documentos referenciados se encuentran respaldados en Google Drive y en el inventario Excel adjunto.
+        </div>
+    </div>
+
+</div>
+
+<!-- BOTÓN VOLVER ARRIBA -->
+<button class="back-to-top" id="backToTop" title="Volver arriba">↑</button>
+
+<script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById('tab-' + tabId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
+    });
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
+
+</body>
+</html>
